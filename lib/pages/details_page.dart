@@ -1,6 +1,10 @@
+import 'dart:collection';
+
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:mpesa_flutter_plugin/mpesa_flutter_plugin.dart';
 import 'package:order_in/helpers/responsive_helper.dart';
+import 'package:order_in/widgets/c_textfeild.dart';
 import 'package:order_in/widgets/details_featured_item.dart';
 
 import '../constants/styles.dart';
@@ -26,8 +30,56 @@ class _DetailsState extends State<Details> {
     List itemPriceList=itemPrice.split(' ');
     return int.parse(itemPriceList[1]);
   }
+  TextEditingController controller =TextEditingController();
+ int _itemPrice=0;
+ int itemNumber=1;
+ Future<void> startTransaction(double amount ,String phoneNumber) async{
+  dynamic transactionInitialisation;
+ 
+  try {
+phoneNumber=phoneNumber.substring(1);
+phoneNumber='254$phoneNumber';
+print(phoneNumber);
+  transactionInitialisation =
+          await MpesaFlutterPlugin.initializeMpesaSTKPush(
+                  businessShortCode: '174379',
+                  transactionType:TransactionType.CustomerPayBillOnline,
+                  amount: amount,
+                  partyA:phoneNumber ,
+                  partyB: '174379',
+                  callBackURL:Uri(scheme: "https", host : "my-app.herokuapp.com", path: "/callback"),
+                  accountReference: 'Order In',
+                  phoneNumber: phoneNumber,
+                  baseUri:Uri(scheme: "https", host: "sandbox.safaricom.co.ke"),
+                  transactionDesc: 'Stay dangerous!',
+                  passKey: 'bfb279f9aa9bdbcf158e97dd71a467cd2e0c893059b10f78e6b72ada1ed2c919'
+                  
+                  )
+                  
+                  ;
+                  
   
-final int itemPrice=0;
+  HashMap result =transactionInitialisation as HashMap<String ,dynamic>;
+ print(transactionInitialisation.toString());
+ print('done');
+
+
+  } catch (e) {
+  //you can implement your exception handling here.
+  //Network unreachability is a sure exception.
+  print(e.toString());
+
+  }
+}
+
+
+@override
+  void initState() {
+setState(() {
+  _itemPrice=getPrice(widget.itemPrice);
+});
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -137,7 +189,7 @@ final int itemPrice=0;
                       Padding(
                         padding: const EdgeInsets.only(left: 8.0),
                         child: Text(
-                          widget.itemPrice,
+                          "Ksh ${_itemPrice.toString()}",
                             style: GoogleFonts.lato(
                                 color: Colors.grey, fontSize: 20)),
                       ),
@@ -158,34 +210,80 @@ final int itemPrice=0;
                               child: Row(
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceBetween,
-                                children: const [
-                                  Text(
-                                    '-',
-                                    style: TextStyle(
-                                        fontSize: 22,
-                                        color: Colors.red,
-                                        fontWeight: FontWeight.bold),
-                                  ),
-                                  Text('3',
-                                      style: TextStyle(
-                                          fontSize: 10,
-                                          color: Colors.red,
-                                          fontWeight: FontWeight.bold)),
-                                  Text('+',
+                                children:  [
+                                  GestureDetector(
+                                    onTap: (){
+                                      setState(() {
+                                        _itemPrice=_itemPrice-getPrice(widget.itemPrice);
+                                        itemNumber=itemNumber-1;
+                                      });
+                                    },
+                                    child:const  Text(
+                                      '-',
                                       style: TextStyle(
                                           fontSize: 22,
                                           color: Colors.red,
+                                          fontWeight: FontWeight.bold),
+                                    ),
+                                  ),
+                                  Text('$itemNumber',
+                                      style: const TextStyle(
+                                          fontSize: 10,
+                                          color: Colors.red,
                                           fontWeight: FontWeight.bold)),
+                                  GestureDetector(
+                                    onTap: () {
+                                      setState(() {
+                                      _itemPrice=_itemPrice + getPrice(widget.itemPrice);
+                                       itemNumber=itemNumber+1; 
+                                      });
+                                    },
+                                    child:const  Text('+',
+                                        style: TextStyle(
+                                            fontSize: 22,
+                                            color: Colors.red,
+                                            fontWeight: FontWeight.bold)),
+                                  ),
                                 ],
                               ),
                             ),
-                            const Padding(
-                              padding: EdgeInsets.only(left: 18.0, right: 5),
-                              child: Text(
-                                'Add to cart',
-                                style: TextStyle(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.bold),
+                            GestureDetector(
+                              onTap: () {
+                                showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return SizedBox(
+        width: 500,
+
+        child: AlertDialog(
+          title: Text("Pay Ksh $_itemPrice ",style: headingStyle,),
+          content: customTextFeild(50, MediaQuery.of(context).size.width/5, 'Phone', controller, context),
+          actions: [
+           Center(
+         child: TextButton(
+         
+           style: ButtonStyle(backgroundColor: MaterialStateProperty.all(Colors.red)),
+           
+          onPressed: ()async{
+           
+           await startTransaction(_itemPrice.toDouble(), controller.text);
+           Navigator.of(context).pop();
+          }, child:const Text('Pay With M-PESA',style: TextStyle(color: Colors.white,fontWeight: FontWeight.bold),)),
+           )
+          ],
+        ),
+      );
+    },
+  );
+                              },
+                              child: const Padding(
+                                padding: EdgeInsets.only(left: 18.0, right: 5),
+                                child: Text(
+                                  'Buy',
+                                  style: TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.bold),
+                                ),
                               ),
                             )
                           ],
