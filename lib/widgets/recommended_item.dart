@@ -9,7 +9,7 @@ Widget recommededItem(
     mobile: Container(
       // height: 300,
 
-      // margin: EdgeInsets.only(left: 10 ),
+      margin: EdgeInsets.only(left: 10 ),
       decoration: BoxDecoration(
         color: bgColor,
         borderRadius: BorderRadius.circular(20),
@@ -49,7 +49,8 @@ Widget recommededItem(
     ),
     tablet: Container(
       // height: 300,
-      margin:const  EdgeInsets.only(left:  20),
+
+      margin: EdgeInsets.only(left: 10 ),
       decoration: BoxDecoration(
         color: bgColor,
         borderRadius: BorderRadius.circular(20),
@@ -60,10 +61,10 @@ Widget recommededItem(
             padding: const EdgeInsets.all(10.0),
             child: CircleAvatar(
               backgroundColor: Colors.white,
-              radius:  90,
+              radius:  25.0 ,
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(
-                     40),
+                    20.0 ),
                 child: Image.asset(
                   img,
                   fit: BoxFit.cover,
@@ -71,14 +72,18 @@ Widget recommededItem(
               ),
             ),
           ),
-         const SizedBox(height: 30),
+          SizedBox(height:  10 ),
           Text(
             itemName,
-            style:  recommendedTextStyleTab,
+            style: 
+                 recommendedTextStyle
+              
           ),
           Text(
             price,
-            style:  recommendedTextStyleTab,
+            style: 
+                recommendedTextStyle
+                
           ),
         ],
       ),
