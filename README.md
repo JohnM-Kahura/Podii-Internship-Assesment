@@ -1,6 +1,11 @@
 # order_in
 This is a food ordering app built with flutter.
 
+The app is responsive
+
+The app also give the user the option to pay with Mpesa
+
+I have Integrated the app with the daraja API
 
 
 ## Screenshots
