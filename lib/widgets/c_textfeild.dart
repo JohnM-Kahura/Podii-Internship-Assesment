@@ -22,7 +22,7 @@ Widget customTextFeild(double height, double width, String hint,
                 ),
               ),
             SizedBox(
-              width: MediaQuery.of(context).size.width - 150,
+              width: MediaQuery.of(context).size.width - 200,
               child: TextField(
                 obscureText: false,
                 controller: controller,
